@@ -18,7 +18,10 @@ export const compile = async (sourcePath: string, toml: string = "", packageName
             cargo stylus check && \
             koba generate --wasm target/wasm32-unknown-unknown/release/${packageName.replaceAll('-', '_')}.wasm --sol ${contractPath}
             `,
-        { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'ignore'] }
+        {
+            encoding: 'utf-8',
+            // stdio: ['pipe', 'pipe', 'ignore'] 
+        }
     ).split("\n");
 
     // For debugging

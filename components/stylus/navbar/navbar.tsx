@@ -44,15 +44,11 @@ export function StylusNavBar({
             <NavTooltipItem tooltip="Console">
                 <NavItemConsole />
             </NavTooltipItem>
-            <NavTooltipItem tooltip="Source">
-                <NavItemContent url={url} />
-            </NavTooltipItem>
             <NavTooltipItem tooltip="Download Smart Contract">
                 <NavItemDownloader />
             </NavTooltipItem>
 
             <div className="mt-auto flex flex-col items-center gap-2">
-                {/* {bytecodeId && <NavItemBytecode id={bytecodeId} />} */}
                 <StylusSelectedChain />
                 <NavItemTheme />
                 <StylusSettings />

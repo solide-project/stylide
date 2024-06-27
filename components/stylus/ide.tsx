@@ -27,7 +27,8 @@ import { BuildDeploy } from "@/components/stylus/deploy/build-deploy"
 import { useStylus } from "@/components/stylus/stylus-provider"
 import { StylusNavBar } from "@/components/stylus/navbar/navbar"
 import { QueryHelper } from "@/lib/core"
-import { CompileInput, parseInput } from "@/lib/stylus/input"
+import { CompileError, CompileInput, parseInput } from "@/lib/stylus"
+import JSZip from "jszip"
 
 export const hexToDecimal = (hex: string): number => parseInt(hex, 16)
 
@@ -108,17 +109,16 @@ export function StylusIDE({
     }
 
     const doCompile = async () => {
+        stylus.resetBuild()
         let queryBuilder = new QueryHelper()
 
         if (!stylus.contractPath) {
             throw new Error("Please set a Solidity Contract in settings")
         }
-        queryBuilder = queryBuilder
-            .addParam("contract", stylus.contractPath)
+        queryBuilder = queryBuilder.addParam("contract", stylus.contractPath)
 
         if (stylus.tomlPath) {
-            queryBuilder = queryBuilder
-                .addParam("toml", stylus.tomlPath)
+            queryBuilder = queryBuilder.addParam("toml", stylus.tomlPath)
         }
 
         const sources = fs.generateSources()
@@ -127,93 +127,116 @@ export function StylusIDE({
 
         const response = await fetch(`/api/compile${queryBuilder.build()}`, {
             method: "POST",
-            // body: formData,
             body: JSON.stringify(body),
         })
 
         if (!response.ok) {
-            throw new Error("Failed to compile")
+            const data = (await response.json()) as CompileError
+            stylus.setErrors(data)
+
+            logger.error(`Compiled with ${data.details.length} errors.`, true)
+            return
         }
 
-        const data = await response.json()
-        console.log(data)
-        logger.info(`Contract Size: ${data.output.size}`)
-        logger.info(`WASM Size: ${data.output.wasm}`)
-        stylus.setDeployData(data.output.data)
+
+        // Here our compiler returns a zip file with wasm and json file
+        const data: Blob = await response.blob()
+
+        // Unzip
+        const zip = new JSZip()
+        const zipContent = await zip.loadAsync(data)
+        zipContent.forEach(async (relativePath, file) => {
+            // console.log('Found file:', relativePath);
+
+            if (file.name.endsWith('.wasm')) {
+                const wasmContent: ArrayBuffer = await file.async('arraybuffer');
+                stylus.setWasm(new Blob([wasmContent], { type: "application/wasm" }))
+
+                // console.log(wasmContent)
+            }
+
+            if (file.name.endsWith('.json')) {
+                const textContent = await file.async('string');
+                const output = JSON.parse(textContent);
+                logger.info(`Contract Size: ${output.size}`)
+                logger.info(`WASM Size: ${output.wasm}`)
+                stylus.setDeployData(output.data)
+
+                // console.log(output)
+            }
+        });
     }
 
-    return (
-        <div className="min-w-screen max-w-screen flex max-h-screen min-h-screen">
-            <div className="py-2 pl-2">
-                <StylusNavBar url={""} bytecodeId={bytecodeId} />
-            </div>
-            <ResizablePanelGroup
-                direction="horizontal"
-                className="min-w-screen max-w-screen max-h-screen min-h-screen"
+    return <div className="min-w-screen max-w-screen flex max-h-screen min-h-screen">
+        <div className="py-2 pl-2">
+            <StylusNavBar url={""} bytecodeId={bytecodeId} />
+        </div>
+        <ResizablePanelGroup
+            direction="horizontal"
+            className="min-w-screen max-w-screen max-h-screen min-h-screen"
+        >
+            <ResizablePanel
+                defaultSize={30}
+                minSize={25}
+                className={cn({
+                    hidden: !(isNavItemActive(FILE_KEY) || isNavItemActive(CODE_KEY)),
+                })}
             >
-                <ResizablePanel
-                    defaultSize={30}
-                    minSize={25}
-                    className={cn({
-                        hidden: !(isNavItemActive(FILE_KEY) || isNavItemActive(CODE_KEY)),
-                    })}
-                >
-                    <div className="flex max-h-screen w-full flex-col gap-y-2 overflow-y-auto p-2">
-                        {isNavItemActive(FILE_KEY) && (
-                            <FileTree className="rounded-lg bg-grayscale-025 pb-4" />
-                        )}
-                        {isNavItemActive(CODE_KEY) && (
-                            <BuildDeploy className="rounded-lg bg-grayscale-025" />
-                        )}
-                        {/* {isNavItemActive(UTILITY_KEY) && (
+                <div className="flex max-h-screen w-full flex-col gap-y-2 overflow-y-auto p-2">
+                    {isNavItemActive(FILE_KEY) && (
+                        <FileTree className="rounded-lg bg-grayscale-025 pb-4" />
+                    )}
+                    {isNavItemActive(CODE_KEY) && (
+                        <BuildDeploy className="rounded-lg bg-grayscale-025" />
+                    )}
+                    {/* {isNavItemActive(UTILITY_KEY) && (
                             <UtiltyTab className="rounded-lg bg-grayscale-025" />
                         )} */}
-                    </div>
-                </ResizablePanel>
-                {(isNavItemActive(FILE_KEY) || isNavItemActive(CODE_KEY)) && (
-                    <ResizableHandle withHandle />
-                )}
-                <ResizablePanel defaultSize={70} minSize={5}>
-                    <ResizablePanelGroup direction="vertical">
-                        <ResizablePanel
-                            defaultSize={75}
-                            minSize={5}
-                            className={cn("relative", {
-                                hidden: !isNavItemActive(EDITOR_KEY),
-                            })}
-                        >
-                            {isNavItemActive(EDITOR_KEY) && (
-                                <>
-                                    <IDEHeader />
-                                    <IDE />
-                                    <Button
-                                        className="absolute"
-                                        style={{ bottom: "16px", right: "16px" }}
-                                        size="sm"
-                                        onClick={handleCompile}
-                                        disabled={compiling}
-                                    >
-                                        {compiling ? "Compiling ..." : "Compile"}
-                                    </Button>
-                                </>
-                            )}
-                        </ResizablePanel>
-                        {isNavItemActive(EDITOR_KEY) && isNavItemActive(CONSOLE_KEY) && (
-                            <ResizableHandle withHandle />
+                </div>
+            </ResizablePanel>
+            {(isNavItemActive(FILE_KEY) || isNavItemActive(CODE_KEY)) && (
+                <ResizableHandle withHandle />
+            )}
+            <ResizablePanel defaultSize={70} minSize={5}>
+                <ResizablePanelGroup direction="vertical">
+                    <ResizablePanel
+                        defaultSize={75}
+                        minSize={5}
+                        className={cn("relative", {
+                            hidden: !isNavItemActive(EDITOR_KEY),
+                        })}
+                    >
+                        {isNavItemActive(EDITOR_KEY) && (
+                            <>
+                                <IDEHeader />
+                                <IDE />
+                                <Button
+                                    className="absolute"
+                                    style={{ bottom: "16px", right: "16px" }}
+                                    size="sm"
+                                    onClick={handleCompile}
+                                    disabled={compiling}
+                                >
+                                    {compiling ? "Compiling ..." : "Compile"}
+                                </Button>
+                            </>
                         )}
-                        <ResizablePanel
-                            defaultSize={25}
-                            minSize={5}
-                            className={cn(
-                                "m-2 !overflow-y-auto rounded-lg bg-grayscale-025",
-                                { hidden: !isNavItemActive(CONSOLE_KEY) }
-                            )}
-                        >
-                            <ConsoleLogger className="p-3" />
-                        </ResizablePanel>
-                    </ResizablePanelGroup>
-                </ResizablePanel>
-            </ResizablePanelGroup>
-        </div>
-    )
+                    </ResizablePanel>
+                    {isNavItemActive(EDITOR_KEY) && isNavItemActive(CONSOLE_KEY) && (
+                        <ResizableHandle withHandle />
+                    )}
+                    <ResizablePanel
+                        defaultSize={25}
+                        minSize={5}
+                        className={cn(
+                            "m-2 !overflow-y-auto rounded-lg bg-grayscale-025",
+                            { hidden: !isNavItemActive(CONSOLE_KEY) }
+                        )}
+                    >
+                        <ConsoleLogger className="p-3" />
+                    </ResizablePanel>
+                </ResizablePanelGroup>
+            </ResizablePanel>
+        </ResizablePanelGroup>
+    </div>
 }

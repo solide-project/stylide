@@ -1,3 +1,4 @@
+import { InvalidMessage } from "@/components/core/components/invalid-message";
 import { StylusIDE } from "@/components/stylus/ide";
 import { StylusProvider } from "@/components/stylus/stylus-provider";
 import { loadSampleProject, getStylusContract } from "@/lib/server";
@@ -10,14 +11,18 @@ export default async function IndexPage({ searchParams }: SearchParams) {
   let url = ""
   searchParams?.url && (url = searchParams.url)
 
-  let input = loadSampleProject()
+  let data = loadSampleProject()
   if (url) {
-    input = await getStylusContract(url)
+    data = await getStylusContract(url)
+  }
+
+  if (typeof data === "string") {
+    return <InvalidMessage>{data}</InvalidMessage>
   }
 
   return <StylusProvider>
     <StylusIDE
-      content={JSON.stringify(input)}
+      content={JSON.stringify(data)}
     />
   </StylusProvider>
 }

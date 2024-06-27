@@ -1,5 +1,6 @@
 "use client"
 
+import { CompileError } from "@/lib/stylus"
 import React, { createContext, useContext, useEffect, useState } from "react"
 
 
@@ -8,12 +9,19 @@ export const StylusProvider = ({ children }: StylusProviderProps) => {
     const [contractPath, setContractPath] = useState<string>("Contract.sol")
 
     const [abi, setABI] = useState<string>("")
+    const [errors, setErrors] = useState<CompileError>({} as CompileError)
 
     const [wasm, setWasm] = useState<Blob>({} as Blob)
     const [deployData, setDeployData] = useState<string>("")
 
     useEffect(() => {
     }, [])
+
+    const resetBuild = () => {
+        setErrors({} as CompileError)
+        setWasm({} as Blob)
+        setDeployData("")
+    }
 
     return (
         <StylusContext.Provider
@@ -27,7 +35,10 @@ export const StylusProvider = ({ children }: StylusProviderProps) => {
                 contractPath,
                 setContractPath,
                 abi,
-                setABI
+                setABI,
+                errors,
+                setErrors,
+                resetBuild
             }}
         >
             {children}
@@ -50,6 +61,9 @@ export const StylusContext = createContext({
     setContractPath: (path: string) => { },
     abi: "",
     setABI: (abi: string) => { },
+    errors: {} as CompileError,
+    setErrors: (errors: CompileError) => { },
+    resetBuild: () => { }
 })
 
 export const useStylus = () => useContext(StylusContext)

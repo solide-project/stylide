@@ -24,7 +24,7 @@ export function NavItemDownloader({
 
             downloadBlob({
                 source: payload,
-                name: "package.zip",
+                name: "contract.zip",
             })
         } catch (error) {
             logger.error("Failed to download contract.")

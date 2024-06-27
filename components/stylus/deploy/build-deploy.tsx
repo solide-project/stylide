@@ -7,6 +7,8 @@ import { cn } from "@/lib/utils"
 import { Title } from "@/components/core/components/title"
 import { useStylus } from "@/components/stylus/stylus-provider"
 import { ContractInvoke } from "@/components/stylus/deploy/contract-invoke"
+import { CompileErrors } from "@/components/stylus/deploy/compile-errors"
+import { ContractOverview } from "@/components/stylus/deploy/contract-overview"
 
 interface BuildDeployProps extends React.HTMLAttributes<HTMLDivElement> { }
 
@@ -31,6 +33,8 @@ export function BuildDeploy({ className }: BuildDeployProps) {
         <div className={cn("px-2 pb-4", className)}>
             <Title text="Build & Deploy" />
 
+            {stylus.errors && stylus.errors.details && <CompileErrors />}
+
             <div className="mx-2 my-4 flex items-center gap-x-4 text-sm">
                 <div
                     className={tabActive(Tab.OVERVIEW)}
@@ -46,12 +50,12 @@ export function BuildDeploy({ className }: BuildDeployProps) {
                 </div>
             </div>
 
-            {/* {isActive(Tab.OVERVIEW) &&
-                evm.selectedCompiledContract &&
-                evm.selectedCompiledContract.abi && <ContractOverview />} */}
+            {isActive(Tab.OVERVIEW) &&
+                stylus.deployData && <ContractOverview />}
 
             {isActive(Tab.INTERACT) &&
                 stylus.deployData && <ContractInvoke />}
+
         </div>
     )
 }

@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { compile } from "@/lib/stylus/compiler";
 import stripAnsi from "strip-ansi";
 import toml from "toml";
+import JSZip from "jszip";
 
 export async function POST(request: NextRequest) {
     if (!process.env.PROJECT_PATH) {
@@ -59,21 +60,27 @@ export async function POST(request: NextRequest) {
 
         var wasm = fs.readFileSync(path
             .join(sourcePath, `target/wasm32-unknown-unknown/release/${data.package.name.replaceAll('-', '_')}.wasm`))
-            .toString("base64");
 
         fs.rmSync(mainDir, { recursive: true });
 
-        return NextResponse.json({
-            status: true,
-            message: "",
-            output,
-            wasm
-        })
+        const zip = new JSZip();
+        zip.file("results.json", JSON.stringify(output));
+        zip.file(`contract.wasm`, wasm);
+
+        // Generate the zip file as a Blob (Node.js environment uses Buffers)
+        const content: Blob = await zip.generateAsync({ type: 'blob' })
+        return new NextResponse(content, {
+            headers: {
+                "Content-Type": "application/blob",
+                "Content-Disposition": `attachment; filename=${data.package.name}.zip`
+            }
+        });
+
     } catch (error: any) {
         console.log('error', error)
         let errorMessage: string = stripAnsi(error.stderr || error.stdout || error.message || "Internal error while compiling.");
 
-        // fs.rmSync(mainDir, { recursive: true });
+        fs.rmSync(mainDir, { recursive: true });
 
         return NextResponseError(errorMessage);
     }

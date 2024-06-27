@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
         console.log('error', error)
         let errorMessage: string = stripAnsi(error.stderr || error.stdout || error.message || "Internal error while compiling.");
 
-        // fs.rmSync(mainDir, { recursive: true });
+        fs.rmSync(mainDir, { recursive: true });
 
         return NextResponseError(errorMessage);
     }

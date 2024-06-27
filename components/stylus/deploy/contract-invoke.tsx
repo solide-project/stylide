@@ -22,12 +22,8 @@ export function ContractInvoke({ className }: ContractInvokeProps) {
     const [processedABI, setProcessedABI] = useState<ABIEntry[]>([])
 
     useEffect(() => {
-        console.log("abi", abi)
-
         try {
             const parsedABI = parse(abi)
-            console.log(parsedABI)
-
             setProcessedABI(
                 parsedABI.map((method: ABIEntry) => {
                     if (method.type === "function" && method.inputs) {
@@ -42,7 +38,7 @@ export function ContractInvoke({ className }: ContractInvokeProps) {
             )
         } catch (e: any) {
             // logger.error("Invalid ABI")
-            console.error(e)
+            // console.error(e)
         }
     }, [abi])
 

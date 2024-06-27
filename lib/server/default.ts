@@ -6,7 +6,7 @@ export const loadFile = (source: string): string => {
     return fs.readFileSync(wasmDirectory).toString();
 }
 
-export const loadSampleProject = async () => {
+export const loadSampleProject = () => {
     const tomlPath = 'Cargo.toml'
     const contractPath1 = 'src/lib.rs'
     const contractPath2 = 'src/main.rs'

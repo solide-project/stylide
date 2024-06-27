@@ -7,9 +7,10 @@ interface StylusSettingsProps extends React.HTMLAttributes<HTMLDivElement> { }
 
 export function StylusSettings({ className }: StylusSettingsProps) {
     return <IDESettings>
-        <Title text="Test Settings" />
-
+        <Title text="Stylus Toml Path" />
         <TomlPathInput />
+
+        <Title text="Solidity Contract Path" />
         <ContractPathInput />
     </IDESettings>
 }

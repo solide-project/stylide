@@ -5,6 +5,7 @@ import { useTheme } from "next-themes"
 import { VFSFile } from "@/lib/core"
 import { useEditor } from "@/components/core/providers/editor-provider"
 import { useFileSystem } from "@/components/core/providers/file-provider"
+import path from "path"
 
 interface IDEProps extends React.HTMLAttributes<HTMLDivElement> {
   defaultLanguage?: string
@@ -14,6 +15,7 @@ export function IDE({ defaultLanguage = "sol" }: IDEProps) {
   const fs = useFileSystem()
   const ide = useEditor()
   const { theme } = useTheme()
+  const [selectedDefaultLanguage, setSelectedDefaultLanguage] = useState<string>(defaultLanguage)
 
   const [file, setSelectedFile] = useState<VFSFile>({} as VFSFile)
 
@@ -42,6 +44,25 @@ export function IDE({ defaultLanguage = "sol" }: IDEProps) {
     if (!ide.file) {
       return
     }
+
+    const { ext } = path.parse(ide.file.filePath);
+
+    switch (ext) {
+      case ".sol":
+        setSelectedDefaultLanguage("sol")
+        break
+      case ".rs":
+        setSelectedDefaultLanguage("rust")
+        break
+      case ".toml":
+        setSelectedDefaultLanguage("sol")
+        break
+      case ".json":
+        setSelectedDefaultLanguage("json")
+        break
+      default:
+        setSelectedDefaultLanguage("sol")
+    }
     setSelectedFile(ide.file)
   }, [ide.file])
 
@@ -56,8 +77,8 @@ export function IDE({ defaultLanguage = "sol" }: IDEProps) {
   }, [monaco])
 
   const onChange = async (newValue: string | undefined, event: any) => {
-    if (!newValue) return
-    fs.writeFile(file.filePath, newValue)
+    if (newValue == undefined) return
+    fs.writeFile(file.filePath, newValue || "")
   }
 
   const handleSelectionChange = (event: any, editor: any) => {
