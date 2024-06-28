@@ -8,10 +8,10 @@ import { SolideProviders } from "@/components/providers"
 
 export const metadata: Metadata = {
   title: {
-    default: "Solide | Solidity IDE",
-    template: `%s - Solide`,
+    default: "Stylide | Stylus IDE",
+    template: `%s - Stylide`,
   },
-  description: "Lightweight Solide IDE",
+  description: "Lightweight Stylus IDE",
   icons: {
     icon: "/favicon.ico",
     shortcut: "/favicon-16x16.png",

@@ -10,7 +10,13 @@
 
 ### Install Rust and dependencies
 ```bash
+# Requires Rust Nightly
+rustup update
+rustup update nightly
+rustup component add rust-src --toolchain nightly-x86_64-unknown-linux-gnu
+
 # Install Stylus
+# Note make sure to target wasm32-unknown-unknown to nightly
 cargo install --force cargo-stylus cargo-stylus-check
 rustup target add wasm32-unknown-unknown
 
