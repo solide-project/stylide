@@ -10,7 +10,6 @@ import {
     ResizablePanelGroup,
 } from "@/components/ui/resizable"
 import { ConsoleLogger } from "@/components/core/console"
-import { FileTree } from "@/components/core/file-tree"
 import { IDE } from "@/components/core/ide"
 import { IDEHeader } from "@/components/core/ide-header"
 import { useEditor } from "@/components/core/providers/editor-provider"
@@ -28,6 +27,7 @@ import { useStylus } from "@/components/stylus/stylus-provider"
 import { StylusNavBar } from "@/components/stylus/navbar/navbar"
 import { QueryHelper } from "@/lib/core"
 import { CompileError, CompileInput, parseInput } from "@/lib/stylus"
+import { FileTree } from "@/components/core/file/file-tree"
 import JSZip from "jszip"
 
 export const hexToDecimal = (hex: string): number => parseInt(hex, 16)
@@ -82,9 +82,7 @@ export function StylusIDE({
                 ide.selectFile(entryFile)
             }
 
-            logger.info("Welcome to Movide IDE")
-
-            logger.info("Welcome to Solide IDE")
+            logger.info("Welcome to Stylide IDE")
         })()
     }, [])
 

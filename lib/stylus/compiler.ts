@@ -15,7 +15,7 @@ export const compile = async (sourcePath: string, toml: string = "", packageName
     // cargo stylus export-abi
     const compiledModules = execSync(
         `cd ${sourcePath} && \
-            cargo stylus check && \
+            cargo stylus check -e https://sepolia-rollup.arbitrum.io/rpc && \
             koba generate --wasm target/wasm32-unknown-unknown/release/${packageName.replaceAll('-', '_')}.wasm --sol ${contractPath}
             `,
         {

@@ -2,8 +2,8 @@
  * Dependencies
  * - jszip
  */
-export { isVFSFile } from "./utils/interface"
-export type { VFSFile, Sources, VFSNode } from "./utils/interface"
+export { isVFSFile } from "./file-system/interfaces"
+export type { VFSFile, Sources, VFSNode } from "./file-system/interfaces"
 
 export { zipSources, downloadBlob } from "./deps/downloader"
 export * from "./utils/query"

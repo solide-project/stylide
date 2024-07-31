@@ -77,8 +77,8 @@ export function IDE({ defaultLanguage = "sol" }: IDEProps) {
   }, [monaco])
 
   const onChange = async (newValue: string | undefined, event: any) => {
-    if (newValue == undefined) return
-    fs.writeFile(file.filePath, newValue || "")
+    if (!newValue) return
+    fs.vfs.touch(file.filePath, newValue)
   }
 
   const handleSelectionChange = (event: any, editor: any) => {
