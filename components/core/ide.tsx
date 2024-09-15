@@ -6,12 +6,14 @@ import { VFSFile } from "@/lib/core"
 import { useEditor } from "@/components/core/providers/editor-provider"
 import { useFileSystem } from "@/components/core/providers/file-provider"
 import path from "path"
+import { MonarchDefinitions } from "@/lib/monaco/stylus/language"
+import { getRustCompletion, getStylusCompletion } from "@/lib/monaco/stylus/completion"
 
 interface IDEProps extends React.HTMLAttributes<HTMLDivElement> {
   defaultLanguage?: string
 }
 
-export function IDE({ defaultLanguage = "sol" }: IDEProps) {
+export function IDE({ defaultLanguage = "rust" }: IDEProps) {
   const fs = useFileSystem()
   const ide = useEditor()
   const { theme } = useTheme()
@@ -55,7 +57,7 @@ export function IDE({ defaultLanguage = "sol" }: IDEProps) {
         setSelectedDefaultLanguage("rust")
         break
       case ".toml":
-        setSelectedDefaultLanguage("sol")
+        setSelectedDefaultLanguage("toml")
         break
       case ".json":
         setSelectedDefaultLanguage("json")
@@ -69,9 +71,33 @@ export function IDE({ defaultLanguage = "sol" }: IDEProps) {
   const monaco = useMonaco()
   useEffect(() => {
     if (monaco) {
-      monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
-        noSemanticValidation: true,
-        noSyntaxValidation: true,
+      monaco.languages.register({ id: "rust" })
+      monaco.languages.setMonarchTokensProvider(
+        "rust",
+        MonarchDefinitions as any
+      )
+
+
+      monaco.languages.registerCompletionItemProvider("rust", {
+        // triggerCharacters: ['.', '', '"', '@', '/'],
+        provideCompletionItems: (model, position, context) => {
+          const word = model.getWordUntilPosition(position)
+          const range = {
+            startLineNumber: position.lineNumber,
+            endLineNumber: position.lineNumber,
+            startColumn: word.startColumn,
+            endColumn: word.endColumn,
+          }
+
+
+          const textLine = model.getLineContent(position.lineNumber)
+          return {
+            suggestions: [
+              ...getRustCompletion(range, monaco),
+              ...getStylusCompletion(range, monaco),
+            ],
+          }
+        },
       })
     }
   }, [monaco])
@@ -102,7 +128,7 @@ export function IDE({ defaultLanguage = "sol" }: IDEProps) {
       key={file.filePath}
       height="95vh"
       theme={theme === "light" ? "vs" : "vs-dark"}
-      defaultLanguage={defaultLanguage}
+      defaultLanguage={selectedDefaultLanguage}
       loading={<EditorLoading />}
       onChange={onChange}
       defaultValue={file.content || ""}
