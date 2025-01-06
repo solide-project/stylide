@@ -81,6 +81,7 @@ export function ContractInvoke({ className }: ContractInvokeProps) {
         //     data: deployData,
         // }])
         // const deployTx = await provider2.getTransaction(deployTxHash)
+        console.log(deployData)
         const deployTx = await signer.sendTransaction({
             from: account,
             data: `0x${deployData}`,

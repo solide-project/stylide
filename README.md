@@ -51,6 +51,20 @@ sudo apt-get update
 sudo apt-get install solc
 ```
 
+### Updates
+```bash
+rustup update 1.81.0-x86_64-unknown-linux-gnu 
+
+cargo install --force cargo-stylus cargo-stylus-check
+
+rustup default 1.81.0-x86_64-unknown-linux-gnu
+rustup target add wasm32-unknown-unknown --toolchain 1.81.0-x86_64-unknown-linux-gnu
+```
+
+If you can't default 1.80 (because of override). Found settings.toml
+and add path with the default project path
+Note Koba relies on 1.81
+
 ### Configure Environment Variables
 Create a `.env.local` file in the root directory of the project and use the following template to fill in the required variables:
 ```

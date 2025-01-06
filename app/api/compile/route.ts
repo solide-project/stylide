@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
 
         const zip = new JSZip();
         zip.file("results.json", JSON.stringify(output));
-        zip.file(`contract.wasm`, wasm);
+        // zip.file(`contract.wasm`, wasm);
 
         // Generate the zip file as a Blob (Node.js environment uses Buffers)
         const content: Blob = await zip.generateAsync({ type: 'blob' })

@@ -11,6 +11,7 @@ export const loadSampleProject = () => {
     const contractPath1 = 'src/lib.rs'
     const contractPath2 = 'src/main.rs'
     const solidityContractPath = 'Counter.sol'
+    const toolchainPath = 'rust-toolchain.toml'
 
     return {
         sources: {
@@ -25,6 +26,9 @@ export const loadSampleProject = () => {
             },
             ["Contract.sol"]: {
                 content: loadFile(solidityContractPath)
+            },
+            [toolchainPath]: {
+                content: loadFile(toolchainPath)
             }
         }
     }

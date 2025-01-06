@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Check, FileBox, FilePlus, FolderClosed, FolderOpen, FolderPlus, Trash } from "lucide-react"
+import { Check, Download, FileBox, FilePlus, FolderClosed, FolderOpen, FolderPlus, Trash } from "lucide-react"
 
 import { isVFSFile, VFSFile, VFSNode } from "@/lib/core/file-system/interfaces"
 import path from "path"
@@ -24,6 +24,7 @@ import { Title } from "@/components/core/components/title"
 import { useLogger } from "@/components/core/providers/logger-provider"
 import { useFileSystem } from "@/components/core/providers/file-provider"
 import { useEditor } from "@/components/core/providers/editor-provider"
+import { downloadBlob, zipSources } from "@/lib/core"
 
 interface FileTreeNodeProps extends React.HTMLAttributes<HTMLDivElement> {
   name: string
@@ -166,7 +167,22 @@ interface FileTreeProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export const FileTree = ({ className, name = "root" }: FileTreeProps) => {
-  const { vfs } = useFileSystem()
+  const { vfs, generateSources } = useFileSystem()
+  const logger = useLogger()
+
+  const handleDownload = async (event: any) => {
+    try {
+      const payload = await zipSources(await generateSources())
+      logger.info(`Downloading contract... ${payload.size} bytes`)
+
+      downloadBlob({
+        source: payload,
+        name: "contract.zip",
+      })
+    } catch (error) {
+      logger.error("Failed to download contract.")
+    }
+  }
 
   if (!vfs.vfs) {
     return <div className={className}>Empty</div>
@@ -175,6 +191,23 @@ export const FileTree = ({ className, name = "root" }: FileTreeProps) => {
   return (
     <div className={className}>
       <Title text="File Tree" />
+
+      <div className="my-2 flex gap-2 pl-[8px]">
+        <FilePlus
+          {...iconsProps}
+          onClick={() => {
+            vfs.touch("text.txt")
+          }}
+        />
+        <FolderPlus
+          {...iconsProps}
+          onClick={() => {
+            vfs.mkdir("folder")
+          }}
+        />
+        <Download {...iconsProps} onClick={handleDownload} />
+      </div>
+
       {/* <FileTreeNode name={name} node={vfs.vfs || {}} depth={0} path="" /> */}
       {Object.keys(vfs.vfs).map((name, index) => {
         return <FileTreeNode key={index} name={name} node={vfs.vfs[name] || {}} depth={0} directory="" />
