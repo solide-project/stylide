@@ -38,7 +38,8 @@
     "strip-ansi": "^7.1.0",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
-    "toml": "^3.0.0"
+    "toml": "^3.0.0",
+    "viem": "^2.22.12"
   },
   "devDependencies": {
     "typescript": "^5",

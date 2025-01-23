@@ -18,6 +18,7 @@ export function ContractOverview({ }: ContractOverviewProps) {
 
         logger.info("Downloading wasm file...");
 
+        console.log(stylus.wasm)
         const url = window.URL.createObjectURL(stylus.wasm);
 
         var link = document.createElement("a"); // Or maybe get it from the current document

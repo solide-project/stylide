@@ -22,3 +22,20 @@ export const getContractExplorer = (network: string, contract: string): string =
 
     return `${explorer}/${addressPath}`
 }
+
+export const getTransactionExplorer = (network: string, tx: string): string => {
+    const explorer = getExplorer(network)
+    if (!explorer) {
+        return ""
+    }
+
+    let path = ""
+
+    switch (network) {
+        default:
+            path = `tx/${tx}`
+            break
+    }
+
+    return `${explorer}/${path}`
+}
