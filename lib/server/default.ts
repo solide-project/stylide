@@ -11,7 +11,6 @@ export const loadSampleProject = () => {
     const lockPath = 'Cargo.lock'
     const contractPath1 = 'src/lib.rs'
     const contractPath2 = 'src/main.rs'
-    const solidityContractPath = 'Counter.sol'
     const toolchainPath = 'rust-toolchain.toml'
 
     return {
@@ -27,9 +26,6 @@ export const loadSampleProject = () => {
             },
             [lockPath]: {
                 content: loadFile(lockPath)
-            },
-            ["Contract.sol"]: {
-                content: loadFile(solidityContractPath)
             },
             [toolchainPath]: {
                 content: loadFile(toolchainPath)

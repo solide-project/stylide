@@ -24,7 +24,7 @@ export const compile = async (sourcePath: string, toml: string = "", packageName
     ).split("\n");
 
     const data: any = {}
-    const len = compiledModules.length
+    // const len = compiledModules.length
     compiledModules.forEach((module, index) => {
         // console.log(index, module);
         if (module.startsWith("CONTRACT_SIZE")) {
@@ -33,11 +33,11 @@ export const compile = async (sourcePath: string, toml: string = "", packageName
             data.wasm = `${module.split(":")[1].trim()} bytes`
         } else if (module.startsWith("DEPLOYMENT_CODE")) {
             data.data = module.split(":")[1].trim()
-        } else if (index == len - 2) {
+        } else if (index == 3) {
             data.abi = module
         }
     })
 
-    console.log(data)
+    // console.log(data)
     return data
 }

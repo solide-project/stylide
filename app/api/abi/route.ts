@@ -1,9 +1,7 @@
 import path from "path"
 import fs from "fs"
 import { NextRequest, NextResponse } from "next/server"
-import { compile } from "@/lib/stylus/compiler";
 import stripAnsi from "strip-ansi";
-import toml from "toml";
 import { exportAbi } from "@/lib/stylus/abi";
 
 export async function POST(request: NextRequest) {
