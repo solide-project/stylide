@@ -11,5 +11,11 @@ const getIcon = (chainId: string): string => {
         case ChainID.ARBITRUM_STYLUS_V2:
         default:
             return "arbitrum.svg"
+        case ChainID.OPEN_CAMPUS_CODEX:
+        case ChainID.EDUCHAIN:
+            return "opencampus.svg"
+        case ChainID.APECHAIN_MAINNET:
+        case ChainID.APECHAIN_CURTIS_TESTNET:
+            return "ape.svg"
     }
 }

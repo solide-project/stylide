@@ -6,6 +6,10 @@ const data: { [key: string]: string } = {
     [ChainID.ARBITRUM_NOVA]: "https://nova.arbiscan.io",
     [ChainID.ARBITRUM_SEPOLIA]: "https://sepolia.arbiscan.io",
     [ChainID.ARBITRUM_STYLUS_V2]: "https://stylusv2-explorer.arbitrum.io",
+    [ChainID.EDUCHAIN]: "https://educhain.blockscout.com",
+    [ChainID.OPEN_CAMPUS_CODEX]: "https://edu-chain-testnet.blockscout.com",
+    [ChainID.APECHAIN_MAINNET]: "https://apescan.io",
+    [ChainID.APECHAIN_CURTIS_TESTNET]: "https://curtis.apescan.io",
 }
 
 export const getExplorer = (network: string): string => data[network] || ""
