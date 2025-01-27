@@ -24,9 +24,12 @@ export const deploy = async (
         .request({ method: "eth_requestAccounts" })
     const account = accounts[0];
 
+    if (!deployData.startsWith("0x")) {
+        deployData =  `0x${deployData}`
+    }
     const deployTx = await signer.sendTransaction({
         from: account,
-        data: `0x${deployData}`,
+        data: deployData,
     })
     let deployReceipt = await deployTx?.wait()
     console.log("deployReceipt", deployReceipt)

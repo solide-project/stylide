@@ -15,8 +15,7 @@ export const compile = async (sourcePath: string, toml: string = "", packageName
     // cargo stylus export-abi
     const compiledModules = execSync(
         `cd ${sourcePath} && \
-            cargo stylus check -e https://sepolia-rollup.arbitrum.io/rpc --no-verify && \
-            koba generate --wasm target/wasm32-unknown-unknown/release/${packageName.replaceAll('-', '_')}.wasm --sol ${contractPath}
+            cargo stylus check -e https://sepolia-rollup.arbitrum.io/rpc
             `,
         {
             encoding: 'utf-8',
@@ -24,15 +23,21 @@ export const compile = async (sourcePath: string, toml: string = "", packageName
         }
     ).split("\n");
 
-    // For debugging
-    // compiledModules.forEach((module, index) => {
-    //     console.log(index, module);
-    // })
+    const data: any = {}
+    const len = compiledModules.length
+    compiledModules.forEach((module, index) => {
+        // console.log(index, module);
+        if (module.startsWith("CONTRACT_SIZE")) {
+            data.size = `${module.split(":")[1].trim()} bytes`
+        } else if (module.startsWith("WASM_SIZE")) {
+            data.wasm = `${module.split(":")[1].trim()} bytes`
+        } else if (module.startsWith("DEPLOYMENT_CODE")) {
+            data.data = module.split(":")[1].trim()
+        } else if (index == len - 2) {
+            data.abi = module
+        }
+    })
 
-    return {
-        size: stripAnsi(compiledModules[0].split(":")[1]).trim(),
-        wasm: stripAnsi(compiledModules[1].split(":")[1]).trim(),
-        gas: stripAnsi(compiledModules[3].split(":")[1]).trim(),
-        data: compiledModules[compiledModules.length - 2]
-    };
+    console.log(data)
+    return data
 }

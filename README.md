@@ -37,13 +37,14 @@ rustup update
 rustup update nightly
 rustup component add rust-src --toolchain nightly-x86_64-unknown-linux-gnu
 
-# Install Stylus
-# Ensure to target wasm32-unknown-unknown to nightly
-cargo install --force cargo-stylus cargo-stylus-check
+# Install Stylus (Note we can either use 1. or 2. Currently using 1.)
 rustup target add wasm32-unknown-unknown
+# 1. Build and install from source
+git clone https://github.com/OffchainLabs/cargo-stylus.git
+cargo install --path main/
+# 2. Ensure to target wasm32-unknown-unknown to nightly
+cargo install --force cargo-stylus cargo-stylus-check
 
-# Library Helper
-cargo install koba
 
 # Solidity Compiler Solc
 sudo add-apt-repository ppa:ethereum/ethereum
@@ -61,9 +62,7 @@ rustup default 1.81.0-x86_64-unknown-linux-gnu
 rustup target add wasm32-unknown-unknown --toolchain 1.81.0-x86_64-unknown-linux-gnu
 ```
 
-If you can't default 1.80 (because of override). Found settings.toml
-and add path with the default project path
-Note Koba relies on 1.81
+If you can't default 1.81 (because of override). Found `settings.toml` in *typically* `~/.rustup` and add path with the default project path ~~because Note Koba relies on 1.81~~
 
 ### Configure Environment Variables
 Create a `.env.local` file in the root directory of the project and use the following template to fill in the required variables:

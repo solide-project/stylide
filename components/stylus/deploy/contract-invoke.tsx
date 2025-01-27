@@ -89,7 +89,6 @@ export function ContractInvoke({ className }: ContractInvokeProps) {
             throw new Error("Please install MetaMask to deploy contract");
         }
 
-        // Deploy contract
         logger.info("Deploying contract...")
 
         // This is to determined if we are deploying an existing contract

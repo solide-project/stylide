@@ -156,11 +156,15 @@ export function StylusIDE({
             if (file.name.endsWith('.json')) {
                 const textContent = await file.async('string');
                 const output = JSON.parse(textContent);
+                // console.log(output)
+
                 logger.info(`Contract Size: ${output.size}`)
                 logger.info(`WASM Size: ${output.wasm}`)
                 stylus.setDeployData(output.data)
 
-                // console.log(output)
+                if (output.abi) {
+                    stylus.setABI(output.abi)
+                }
             }
         });
     }

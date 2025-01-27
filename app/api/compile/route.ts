@@ -56,7 +56,6 @@ export async function POST(request: NextRequest) {
         const sourcePath = path.join(mainDir, dir)
         console.log("Compiling", data.package.name, sourcePath, contractPath)
         const output = await compile(sourcePath, tomlPath, data.package.name, contractPath);
-        // console.log("output", output);
 
         var wasm = fs.readFileSync(path
             .join(sourcePath, `target/wasm32-unknown-unknown/release/${data.package.name.replaceAll('-', '_')}.wasm`))

@@ -8,6 +8,7 @@ export const loadFile = (source: string): string => {
 
 export const loadSampleProject = () => {
     const tomlPath = 'Cargo.toml'
+    const lockPath = 'Cargo.lock'
     const contractPath1 = 'src/lib.rs'
     const contractPath2 = 'src/main.rs'
     const solidityContractPath = 'Counter.sol'
@@ -23,6 +24,9 @@ export const loadSampleProject = () => {
             },
             [contractPath2]: {
                 content: loadFile(contractPath2)
+            },
+            [lockPath]: {
+                content: loadFile(lockPath)
             },
             ["Contract.sol"]: {
                 content: loadFile(solidityContractPath)

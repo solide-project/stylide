@@ -17,9 +17,9 @@ export const exportAbi = async (sourcePath: string, toml: string = "") => {
     ).split("\n");
 
     // For debugging
-    outputs.forEach((output, index) => {
-        console.log(index, output);
-    })
+    // outputs.forEach((output, index) => {
+    //     console.log(index, output);
+    // })
 
     // We can parse the JSON here but for now we will return the raw output
     // return JSON.parse(outputs[3] || "[]");
