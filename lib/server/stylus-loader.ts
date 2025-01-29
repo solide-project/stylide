@@ -30,6 +30,7 @@ class StylusLoader {
 
         const tomlFile = content.find(i => i.name.toLocaleLowerCase() === "cargo.toml" && i.type === "file")
         const tomlLockFile = content.find(i => i.name.toLocaleLowerCase() === "cargo.lock" && i.type === "file")
+        const rustToolchainFolder = content.find(i => i.name.toLocaleLowerCase() === "rust-toolchain.toml" && i.type === "file")
         const sourcesFolder = content.find(i => i.name.toLocaleLowerCase() === "src" && i.type === "dir")
         const isValidProject = tomlFile && sourcesFolder
 
@@ -43,6 +44,13 @@ class StylusLoader {
                 content: tomlContent,
             },
         }
+        if (rustToolchainFolder?.html_url) {
+            const rustToolchainContent = await fetchGithubSource(rustToolchainFolder?.html_url)
+            tomlSources[rustToolchainFolder?.path] = {
+                content: rustToolchainContent,
+            }
+        }
+        
         if (tomlLockFile?.html_url) {
             const tomlLockFileContent = await fetchGithubSource(tomlLockFile?.html_url)
             tomlSources[tomlLockFile?.path] = {
