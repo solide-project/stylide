@@ -9,8 +9,12 @@ import path from "path"
  * @returns
  */
 export const getStylusContract = async (url: string) => {
-    const loader = new StylusLoader(url)
-    return await loader.generateSource()
+    try {
+        const loader = new StylusLoader(url)
+        return await loader.generateSource()   
+    } catch (e: any) {
+        return e.message.toString()
+    }
 }
 
 class StylusLoader {
@@ -25,6 +29,7 @@ class StylusLoader {
         const content = await fetchGithubAPI(url)
 
         const tomlFile = content.find(i => i.name.toLocaleLowerCase() === "cargo.toml" && i.type === "file")
+        const tomlLockFile = content.find(i => i.name.toLocaleLowerCase() === "cargo.lock" && i.type === "file")
         const sourcesFolder = content.find(i => i.name.toLocaleLowerCase() === "src" && i.type === "dir")
         const isValidProject = tomlFile && sourcesFolder
 
@@ -33,6 +38,17 @@ class StylusLoader {
         }
 
         const tomlContent = await fetchGithubSource(tomlFile?.html_url)
+        const tomlSources = {
+            [tomlFile.path]: {
+                content: tomlContent,
+            },
+        }
+        if (tomlLockFile?.html_url) {
+            const tomlLockFileContent = await fetchGithubSource(tomlLockFile?.html_url)
+            tomlSources[tomlLockFile?.path] = {
+                content: tomlLockFileContent,
+            }
+        }
 
         let dependencies: ContractDependency[] = []
         let sources: any = {}
@@ -47,7 +63,6 @@ class StylusLoader {
             return "Error loading dependencies"
         }
 
-        const { dir } = path.parse(tomlFile.path)
         return {
             language: "Stylus",
             settings: {
@@ -57,12 +72,7 @@ class StylusLoader {
             },
             sources: {
                 ...sources,
-                [tomlFile.path]: {
-                    content: tomlContent,
-                },
-                [path.join(dir, "Contract.sol")]: {
-                    content: "contract Contract { }",
-                }
+                ...tomlSources,
             },
         }
     }

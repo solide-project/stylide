@@ -1,5 +1,6 @@
 import { InvalidMessage } from "@/components/core/components/invalid-message";
 import { StylusIDE } from "@/components/stylus/ide";
+import { LoadContractPage } from "@/components/stylus/load-contract";
 import { StylusProvider } from "@/components/stylus/stylus-provider";
 import { loadSampleProject, getStylusContract } from "@/lib/server";
 
@@ -16,9 +17,7 @@ export default async function IndexPage({ searchParams }: SearchParams) {
     data = await getStylusContract(url)
   }
 
-  if (typeof data === "string") {
-    return <InvalidMessage>{data}</InvalidMessage>
-  }
+  if (typeof data === "string") return <LoadContractPage message={data} />
 
   return <StylusProvider>
     <StylusIDE

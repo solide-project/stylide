@@ -17,6 +17,7 @@ import { StylusSettings } from "@/components/stylus/settings/settings"
 import { NavItemDownloader } from "@/components/stylus/navbar/nav-item-downloader"
 import { SelectedNetwork } from "@/components/stylus/navbar/selected-network"
 import { StylusSelectedChain } from "../selected-chain"
+import { NavItemLoader } from "./nav-item-loader"
 
 interface StylusNavBarProps extends React.HTMLAttributes<HTMLDivElement> {
     url: string,
@@ -47,7 +48,10 @@ export function StylusNavBar({
             <NavTooltipItem tooltip="Download Smart Contract">
                 <NavItemDownloader />
             </NavTooltipItem>
-
+            <NavTooltipItem tooltip="Load New Contract">
+                <NavItemLoader />
+            </NavTooltipItem>
+            
             <div className="mt-auto flex flex-col items-center gap-2">
                 <StylusSelectedChain />
                 <NavItemTheme />
