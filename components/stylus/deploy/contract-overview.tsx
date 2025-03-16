@@ -6,6 +6,7 @@ import { AlertCircle, AlertTriangle } from "lucide-react"
 import { useStylus } from "@/components/stylus/stylus-provider"
 import { useLogger } from "@/components/core/providers/logger-provider";
 import { Button } from "@/components/ui/button";
+import { CopyText } from "@/components/core/components/copy-text";
 
 interface ContractOverviewProps extends React.HTMLAttributes<HTMLDivElement> { }
 
@@ -28,6 +29,11 @@ export function ContractOverview({ }: ContractOverviewProps) {
     }
 
     return <div className="h-full overflow-y-auto px-4">
+        {stylus.deployData &&
+            <div>
+                {stylus.deployData.slice(0, 100)}
+                <CopyText title="Bytecode" payload={stylus.deployData || ""} />
+            </div>}
         {stylus.wasm && <div className="flex flex-col justify-between lg:flex-row">
             <Button onClick={downloadWasm}>Download Wasm</Button>
         </div>}
