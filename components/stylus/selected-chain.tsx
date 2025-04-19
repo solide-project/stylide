@@ -7,6 +7,7 @@ import { ChainID, getIconByChainId, getNetworkNameFromChainID } from "@/lib/chai
 
 import { SelectedChain } from "@/components/core/components/selected-chain"
 import { EVMSelectedChainWarning } from "@/components/core/components/selected-chain-warning"
+import { CompilerType, useStylus } from "./stylus-provider"
 
 export const hexToDecimal = (hex: string): number => parseInt(hex, 16)
 export const hexToString = (hex: string): string => hexToDecimal(hex).toString()
@@ -17,6 +18,7 @@ const chains = Object.entries(ChainID)
     .map((value) => value[1]) as string[]
 
 export function StylusSelectedChain({ }: StylusSelectedChainProps) {
+    const { setCompilerType } = useStylus()
     const [isSupported, setIsSupported] = useState<boolean>(false)
     const [chainId, setChainId] = useState<string>("13331371")
     const [hasEthereumInjection, setHasEthereumInjection] =
@@ -46,6 +48,12 @@ export function StylusSelectedChain({ }: StylusSelectedChainProps) {
                 const chainId = hexToString(hexId).toString()
                 checkSupport(chainId)
                 setChainId(chainId)
+
+                if (chainId === ChainID.PHAROS_DEVNET) {
+                    setCompilerType(CompilerType.PHAROS_STYLUS)
+                } else {
+                    setCompilerType(CompilerType.STYLUS)
+                }
             }
         })()
     }, [])

@@ -1,6 +1,7 @@
 import { execSync } from "child_process";
 import stripAnsi from "strip-ansi";
 import { cargoFileLower } from "./constants";
+import { MoveDownLeft } from "lucide-react";
 
 export const compile = async (sourcePath: string, toml: string = "", packageName: string = "", contractPath: string = "") => {
     if (toml.startsWith("/")) {
@@ -35,6 +36,43 @@ export const compile = async (sourcePath: string, toml: string = "", packageName
             data.data = module.split(":")[1].trim()
         } else if (index == 3) {
             data.abi = module
+        }
+    })
+
+    // console.log(data)
+    return data
+}
+
+export const compilePharos = async (sourcePath: string, toml: string = "", packageName: string = "", contractPath: string = "") => {
+    if (toml.startsWith("/")) {
+        toml = toml.slice(1);
+    }
+    if (toml.toLocaleLowerCase().endsWith(`/${cargoFileLower}`)) {
+        toml = toml.slice(0, -9);
+    }
+
+    const compiledModules = execSync(
+        `cd ${sourcePath} && \
+            cargo pharos-stylus check -e https://devnet.dplabs-internal.com
+            `,
+        {
+            encoding: 'utf-8',
+            // stdio: ['pipe', 'pipe', 'ignore'] 
+        }
+    ).split("\n");
+
+    const data: any = {}
+    // const len = compiledModules.length
+    compiledModules.forEach((module, index) => {
+        console.log(index, module);
+        if (module.startsWith("CONTRACT_SIZE")) {
+            data.size = `${module.split(":")[1].trim()} bytes`
+        } else if (module.startsWith("WASM_SIZE")) {
+            data.wasm = `${module.split(":")[1].trim()} bytes`
+        } else if (module.startsWith("DEPLOYMENT_CODE")) {
+            data.data = module.split(":")[1].trim()
+        } else if (module.startsWith("Contract JSON ABI")) {
+            data.abi = compiledModules[index+1]
         }
     })
 

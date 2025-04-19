@@ -10,6 +10,7 @@ const data: { [key: string]: string } = {
     [ChainID.OPEN_CAMPUS_CODEX]: "EDU Chain Testnet",
     [ChainID.APECHAIN_MAINNET]: "Ape Mainnet",
     [ChainID.APECHAIN_CURTIS_TESTNET]: "Ape Curtis",
+    [ChainID.PHAROS_DEVNET]: "Pharos Devnet",
 }
 
 export const getNetworkNameFromChainID = (network: string): string =>

@@ -1,16 +1,20 @@
 import { IDESettings } from "@/components/core/components/ide-settings"
 import { Title } from "@/components/core/components/title"
 import { TomlPathInput } from "@/components/stylus/settings/toml-path-input"
-import { ContractPathInput } from "./contract-input"
+import { CompilerTypeInput } from "./compiler-type"
 
 interface StylusSettingsProps extends React.HTMLAttributes<HTMLDivElement> { }
 
-export function StylusSettings({ className }: StylusSettingsProps) {
+export function StylusSettings({ }: StylusSettingsProps) {
     return <IDESettings>
-        <Title text="Stylus Toml Path" />
-        <TomlPathInput />
+        <div className="flex items-center justify-between">
+            <div className="font-semibold">Stylus Toml Path</div>
+            <TomlPathInput />
+        </div>
 
-        <Title text="Solidity Contract Path" />
-        <ContractPathInput />
+        <div className="flex items-center justify-between">
+            <div className="font-semibold">Compiler Type</div>
+            <CompilerTypeInput />
+        </div>
     </IDESettings>
 }

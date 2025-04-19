@@ -11,6 +11,7 @@ const data: { [key: string]: string } = {
     [ChainID.OPEN_CAMPUS_CODEX]: "https://rpc.open-campus-codex.gelato.digital",
     [ChainID.APECHAIN_MAINNET]: "https://curtis.rpc.caldera.xyz/http",
     [ChainID.APECHAIN_CURTIS_TESTNET]: "https://curtis.rpc.caldera.xyz/http",
+    [ChainID.PHAROS_DEVNET]: "https://devnet.dplabs-internal.com",
 }
 
 export const getRPC = (network: string): string =>

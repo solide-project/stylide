@@ -10,6 +10,7 @@ const data: { [key: string]: string } = {
     [ChainID.OPEN_CAMPUS_CODEX]: "https://edu-chain-testnet.blockscout.com",
     [ChainID.APECHAIN_MAINNET]: "https://apescan.io",
     [ChainID.APECHAIN_CURTIS_TESTNET]: "https://curtis.apescan.io",
+    [ChainID.PHAROS_DEVNET]: "https://pharosscan.xyz",
 }
 
 export const getExplorer = (network: string): string => data[network] || ""

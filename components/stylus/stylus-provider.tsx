@@ -3,6 +3,10 @@
 import { CompileError } from "@/lib/stylus"
 import React, { createContext, useContext, useEffect, useState } from "react"
 
+export enum CompilerType {
+    STYLUS = "stylus",
+    PHAROS_STYLUS = "pharos"
+}
 
 export const StylusProvider = ({ children }: StylusProviderProps) => {
     const [tomlPath, setTomlPath] = useState<string>("")
@@ -13,9 +17,7 @@ export const StylusProvider = ({ children }: StylusProviderProps) => {
 
     const [wasm, setWasm] = useState<Blob>({} as Blob)
     const [deployData, setDeployData] = useState<string>("")
-
-    useEffect(() => {
-    }, [])
+    const [compilerType, setCompilerType] = useState<CompilerType>(CompilerType.STYLUS)
 
     const resetBuild = () => {
         setErrors({} as CompileError)
@@ -36,6 +38,8 @@ export const StylusProvider = ({ children }: StylusProviderProps) => {
                 setContractPath,
                 abi,
                 setABI,
+                compilerType,
+                setCompilerType,
                 errors,
                 setErrors,
                 resetBuild
@@ -61,6 +65,8 @@ export const StylusContext = createContext({
     setContractPath: (path: string) => { },
     abi: "",
     setABI: (abi: string) => { },
+    compilerType: CompilerType.STYLUS,
+    setCompilerType: (_: CompilerType) => { },
     errors: {} as CompileError,
     setErrors: (errors: CompileError) => { },
     resetBuild: () => { }

@@ -119,6 +119,10 @@ export function StylusIDE({
             queryBuilder = queryBuilder.addParam("toml", stylus.tomlPath)
         }
 
+        if (stylus.compilerType) {
+            queryBuilder = queryBuilder.addParam("compiler", stylus.compilerType)
+        }
+
         const sources = fs.generateSources()
         const source: any = { sources }
         const body = { input: source }
@@ -136,7 +140,6 @@ export function StylusIDE({
             return
         }
 
-
         // Here our compiler returns a zip file with wasm and json file
         const data: Blob = await response.blob()
 
@@ -145,7 +148,6 @@ export function StylusIDE({
         const zipContent = await zip.loadAsync(data)
         zipContent.forEach(async (relativePath, file) => {
             // console.log('Found file:', relativePath);
-
             if (file.name.endsWith('.wasm')) {
                 const wasmContent: ArrayBuffer = await file.async('arraybuffer');
                 stylus.setWasm(new Blob([wasmContent], { type: "application/wasm" }))

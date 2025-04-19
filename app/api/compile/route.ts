@@ -1,7 +1,7 @@
 import path from "path"
 import fs from "fs"
 import { NextRequest, NextResponse } from "next/server"
-import { compile } from "@/lib/stylus/compiler";
+import { compile, compilePharos } from "@/lib/stylus/compiler";
 import stripAnsi from "strip-ansi";
 import toml from "toml";
 import JSZip from "jszip";
@@ -13,6 +13,7 @@ export async function POST(request: NextRequest) {
 
     let tomlPath = request.nextUrl.searchParams.get("toml") || ""
     let contractPath = request.nextUrl.searchParams.get("contract") || ""
+    let compilerType = request.nextUrl.searchParams.get("compiler") || ""
 
     const { input } = await request.json();
     const { sources } = input;
@@ -55,17 +56,24 @@ export async function POST(request: NextRequest) {
         const { dir } = path.parse(tomlPath);
         const sourcePath = path.join(mainDir, dir)
         console.log("Compiling", data.package.name, sourcePath, contractPath)
-        const output = await compile(sourcePath, tomlPath, data.package.name, contractPath);
+
+        const zip = new JSZip();
+
+        if (compilerType === "pharos") {
+            const output = await compilePharos(sourcePath, tomlPath, data.package.name, contractPath);
+            zip.file("results.json", JSON.stringify(output));
+        } else {
+            const output = await compile(sourcePath, tomlPath, data.package.name, contractPath);
+            zip.file("results.json", JSON.stringify(output));
+        }
 
         var wasm = fs.readFileSync(path
             .join(sourcePath, `target/wasm32-unknown-unknown/release/${data.package.name.replaceAll('-', '_')}.wasm`))
 
-        fs.rmSync(mainDir, { recursive: true });
+        // fs.rmSync(mainDir, { recursive: true });
 
-        const zip = new JSZip();
-        zip.file("results.json", JSON.stringify(output));
         zip.file(`contract.wasm`, new Uint8Array(wasm));
-
+        
         // Generate the zip file as a Blob (Node.js environment uses Buffers)
         const content: Blob = await zip.generateAsync({ type: 'blob' })
         return new NextResponse(content, {

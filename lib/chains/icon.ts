@@ -17,5 +17,7 @@ const getIcon = (chainId: string): string => {
         case ChainID.APECHAIN_MAINNET:
         case ChainID.APECHAIN_CURTIS_TESTNET:
             return "ape.svg"
+        case ChainID.PHAROS_DEVNET:
+            return "pharos.svg"
     }
 }

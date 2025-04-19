@@ -40,7 +40,7 @@ rustup component add rust-src --toolchain nightly-x86_64-unknown-linux-gnu
 # Install Stylus (Note we can either use 1. or 2. Currently using 1.)
 rustup target add wasm32-unknown-unknown
 # 1. Build and install from source
-git clone https://github.com/OffchainLabs/cargo-stylus.git
+git clone https://github.com/solide-project/cargo-stylus.git
 cargo install --path main/
 # 2. Ensure to target wasm32-unknown-unknown to nightly
 cargo install --force cargo-stylus cargo-stylus-check
@@ -63,6 +63,23 @@ rustup target add wasm32-unknown-unknown --toolchain 1.81.0-x86_64-unknown-linux
 ```
 
 If you can't default 1.81 (because of override). Found `settings.toml` in *typically* `~/.rustup` and add path with the default project path ~~because Note Koba relies on 1.81~~
+
+### Setup Pharos Stylus (Optional)
+```bash
+rustup target add wasm32-unknown-unknown --toolchain 1.83.0
+
+git clone https://github.com/solide-project/pharos-cargo-stylus.git
+cd pharos-cargo-stylus
+
+# Build cli stored in /target
+cargo build -r
+
+# Add /target so cli is cargo pharos-stylus
+rm -rf ~/.cargo/bin/cargo-pharos-stylus && ln -s "$(pwd)/target/release/cargo-stylus" ~/.cargo/bin/cargo-pharos-stylus
+
+# Should be able to call
+cargo pharos-stylus --help
+```
 
 ### Configure Environment Variables
 Create a `.env.local` file in the root directory of the project and use the following template to fill in the required variables:
